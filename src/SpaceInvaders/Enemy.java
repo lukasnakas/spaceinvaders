@@ -61,6 +61,10 @@ public class Enemy {
         return ship.getBoundary().intersects(this.getBoundary());
     }
 
+    public boolean intersects(Castle castle){
+        return castle.getBoundary().intersects(this.getBoundary());
+    }
+
     public double getPosY() {
         return posY;
     }

@@ -67,7 +67,8 @@ public class Main extends Application {
         scene.setOnKeyPressed(keyEvent -> {
             if(keyEvent.getCode().toString() != "SPACE")
                 commands.clear();
-            commands.add(keyEvent.getCode().toString());
+            if(!commands.contains(keyEvent.getCode().toString()))
+                commands.add(keyEvent.getCode().toString());
         });
 
         scene.setOnKeyReleased(keyEvent -> {
@@ -82,6 +83,7 @@ public class Main extends Application {
                 render(gc, ship, enemies, castles, bullets, enemyBullets);
                 handleCommands(ship, canvas, gc);
                 handleEnemies(enemies, canvas);
+                checkEnemyToCastleCollision(enemies, castles);
                 handleBullets(enemies, castles);
                 handleEnemyBullets(ship, castles);
                 checkWinCondition(enemies);
@@ -231,11 +233,21 @@ public class Main extends Application {
         }
     }
 
+    private void checkEnemyToCastleCollision(Enemy[][] enemies, ArrayList<Castle> castles) {
+        for(Castle castle : castles)
+            for(int i = 0; i < enemies.length; i++)
+                for(int j = 0; j < enemies[i].length; j++)
+                    if(enemies[i][j].intersects(castle) && !castle.isDestroyed() && !enemies[i][j].isDestroyed()){
+                        enemies[i][j].setDestroyed(true);
+                        castle.setDestroyed(true);
+                    }
+    }
+
     private void checkLoseCondition(Enemy[][] enemies, Ship ship, Canvas canvas){
         for(int i = 0; i < enemies.length; i++)
             for(int j = 0; j < enemies[i].length; j++) {
                 Enemy enemy = enemies[i][j];
-                if(enemy.intersects(ship) || enemy.getPosY() + enemy.getHeight() >= canvas.getHeight())
+                if((enemy.intersects(ship) && !enemy.isDestroyed()) || enemy.getPosY() + enemy.getHeight() >= canvas.getHeight())
                     gameOver();
             }
     }
