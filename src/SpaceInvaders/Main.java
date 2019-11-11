@@ -183,7 +183,7 @@ public class Main extends Application {
         for(int i = 0; i < enemies.length; i++)
             for(int j = 0; j < enemies[i].length; j++) {
                 enemies[i][j].setMovingLeft(!enemies[i][j].isMovingLeft());
-                enemies[i][j].setPosY(enemies[i][j].getPosY() + 5);
+                enemies[i][j].setPosY(enemies[i][j].getPosY() + enemies[i][j].getSpeed() * 2);
             }
     }
 
