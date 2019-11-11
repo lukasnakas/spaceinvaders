@@ -13,6 +13,7 @@ public class Enemy {
                     height = enemyShip.getHeight();
     private double speed = 2;
     private boolean movingLeft = true;
+    private boolean isDestroyed = false;
 
     public Enemy (int posX, int posY){
         this.posX = posX;
@@ -20,7 +21,8 @@ public class Enemy {
     }
 
     public void render(GraphicsContext gc){
-        gc.drawImage(enemyShip, posX, posY);
+        if(!isDestroyed)
+            gc.drawImage(enemyShip, posX, posY);
     }
 
     public void move(Canvas canvas){
@@ -77,4 +79,11 @@ public class Enemy {
         this.posY = posY;
     }
 
+    public boolean isDestroyed() {
+        return isDestroyed;
+    }
+
+    public void setDestroyed(boolean destroyed) {
+        isDestroyed = destroyed;
+    }
 }

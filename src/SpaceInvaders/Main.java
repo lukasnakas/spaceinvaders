@@ -38,11 +38,20 @@ public class Main extends Application {
 
         Ship ship = new Ship((int)canvas.getWidth() / 2, 550);
 
-        ArrayList<Enemy> enemies = new ArrayList<>();
-        enemies.add(new Enemy(550, 50));
-        enemies.add(new Enemy(300, 50));
+        Enemy[][] enemies = new Enemy[5][11];
 
-        boolean timeToMoveEnemies = true;
+        int posX, posY = 20;
+        for(int i = 0; i < enemies.length; i++) {
+            posX = 15;
+            for (int j = 0; j < enemies[i].length; j++) {
+                enemies[i][j] = new Enemy(posX, posY);
+                posX += 70;
+            }
+            posY += 40;
+        }
+
+//        enemies.add(new Enemy(550, 50));
+//        enemies.add(new Enemy(300, 50));
 
         scene.setOnKeyPressed(keyEvent -> {
             if(keyEvent.getCode().toString() != "SPACE")
@@ -94,19 +103,28 @@ public class Main extends Application {
         }
     }
 
-    private void handleEnemies(ArrayList<Enemy> enemies, Canvas canvas) {
-        for(Enemy e : enemies)
-            e.move(canvas);
+    private void handleEnemies(Enemy[][] enemies, Canvas canvas) {
+        for(int i = 0; i < enemies.length; i++)
+            for(int j = 0; j < enemies[i].length; j++)
+                enemies[i][j].move(canvas);
     }
 
-    private void checkWinCondition(ArrayList<Enemy> enemies) {
-        if(enemies.size() == 0) {
+    private boolean areEnemiesDestroyed(Enemy[][] enemies){
+        for(int i = 0; i < enemies.length; i++)
+            for(int j = 0; j < enemies[i].length; j++)
+                if(!enemies[i][j].isDestroyed())
+                    return false;
+        return true;
+    }
+
+    private void checkWinCondition(Enemy[][] enemies) {
+        if(areEnemiesDestroyed(enemies)) {
             System.out.println("CONGRATULATIONS!!!");
             Platform.exit();
         }
     }
 
-    private void handleBullets(ArrayList<Enemy> enemies) {
+    private void handleBullets(Enemy[][] enemies) {
         Iterator<Bullet> iter = bullets.iterator();
 
         while(iter.hasNext()){
@@ -118,21 +136,23 @@ public class Main extends Application {
             }
             bullet.move();
 
-            for(Enemy enemy : enemies)
-                if(enemy.intersects(bullet)){
-                    enemies.remove(enemy);
-                    iter.remove();
-                    break;
-                }
+            for(int i = 0; i < enemies.length; i++)
+                for(int j = 0; j < enemies[i].length; j++)
+                    if(enemies[i][j].intersects(bullet) && !enemies[i][j].isDestroyed()){
+                        enemies[i][j].setDestroyed(true);
+                        iter.remove();
+                        break;
+                    }
         }
     }
 
-    public void render(GraphicsContext gc, Ship ship, ArrayList<Enemy> enemies, ArrayList<Bullet> bullets){
+    public void render(GraphicsContext gc, Ship ship, Enemy[][] enemies, ArrayList<Bullet> bullets){
         gc.drawImage( background, 0, 0 );
         ship.render(gc);
 
-        for(Enemy enemy : enemies)
-            enemy.render(gc);
+        for(int i = 0; i < enemies.length; i++)
+            for(int j = 0; j < enemies[i].length; j++)
+                enemies[i][j].render(gc);
 
         for(Bullet bullet : bullets)
             bullet.render(gc);
