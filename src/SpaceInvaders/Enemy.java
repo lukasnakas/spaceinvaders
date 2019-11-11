@@ -15,12 +15,9 @@ public class Enemy {
     private double speed = 2;
     private boolean movingLeft = true;
 
-    public Enemy (int posX, int posY){
+    public Enemy (int posX, int posY, GraphicsContext gc){
         this.posX = posX;
         this.posY = posY;
-    }
-
-    public void setGraphicsContext(GraphicsContext gc){
         this.gc = gc;
     }
 
@@ -33,6 +30,7 @@ public class Enemy {
             moveLeft();
         else
             moveRight(canvas);
+        render();
     }
 
     public void moveRight(Canvas canvas){
@@ -41,7 +39,6 @@ public class Enemy {
             posX += speed;
         else
             movingLeft = true;
-        render();
     }
 
     public void moveLeft(){
@@ -49,7 +46,6 @@ public class Enemy {
             posX -= speed;
         else
             movingLeft = false;
-        render();
     }
 
     public Rectangle2D getBoundary(){

@@ -3,19 +3,15 @@ package SpaceInvaders;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.event.EventHandler;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.control.PasswordField;
 import javafx.scene.image.Image;
-import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.Scanner;
 
 
 public class Main extends Application {
@@ -43,20 +39,21 @@ public class Main extends Application {
         Ship ship = new Ship((int)canvas.getWidth() / 2, 550);
 
         ArrayList<Enemy> enemies = new ArrayList<>();
-        enemies.add(new Enemy(550, 50));
-        enemies.add(new Enemy(300, 50));
-
-        for (Enemy e: enemies )
-            e.setGraphicsContext(gc);
+        enemies.add(new Enemy(550, 50, gc));
+        enemies.add(new Enemy(300, 50, gc));
 
         boolean timeToMoveEnemies = true;
 
         scene.setOnKeyPressed(keyEvent -> {
-            if(commands.size() == 0)
-                commands.add(keyEvent.getCode().toString());
+            if(keyEvent.getCode().toString() != "SPACE")
+                commands.clear();
+            commands.add(keyEvent.getCode().toString());
         });
 
-        scene.setOnKeyReleased(keyEvent -> commands.remove(keyEvent.getCode().toString()));
+        scene.setOnKeyReleased(keyEvent -> {
+            if(commands.contains(keyEvent.getCode().toString()))
+                commands.remove(keyEvent.getCode().toString());
+        });
 
         new AnimationTimer()
         {
@@ -74,7 +71,7 @@ public class Main extends Application {
                         readyToShoot = false;
                         bulletX = ship.getPosX() + (ship.getWidth() / 2);
                         bulletY = ship.getPosY();
-                        Bullet bullet = new Bullet(bulletX, bulletY);
+                        Bullet bullet = new Bullet(bulletX, bulletY, gc);
                         bullets.add(bullet);
                     }
                 }
@@ -89,33 +86,41 @@ public class Main extends Application {
                 for(Enemy e : enemies)
                     e.move(canvas);
 
-                Iterator<Bullet> iter = bullets.iterator();
-
-                while(iter.hasNext()){
-                    Bullet bullet = iter.next();
-                    if(bullet.isOutOfBounds()) {
-                        bullets.remove(bullet);
-                        break;
-                    }
-                    bullet.render(gc);
-                    for(Enemy enemy : enemies){
-                        if(enemy.intersects(bullet)){
-                            enemies.remove(enemy);
-                            iter.remove();
-                            break;
-                        }
-                    }
-                }
-
-                if(enemies.size() == 0) {
-                    System.out.println("CONGRATULATIONS!!!");
-                    Platform.exit();
-                }
+                handleBullets(enemies);
+                checkWinCondition(enemies);
             }
 
         }.start();
 
         primaryStage.show();
+    }
+
+    private void checkWinCondition(ArrayList<Enemy> enemies) {
+        if(enemies.size() == 0) {
+            System.out.println("CONGRATULATIONS!!!");
+            Platform.exit();
+        }
+    }
+
+    private void handleBullets(ArrayList<Enemy> enemies) {
+        Iterator<Bullet> iter = bullets.iterator();
+
+        while(iter.hasNext()){
+            Bullet bullet = iter.next();
+
+            if(bullet.isOutOfBounds()) {
+                bullets.remove(bullet);
+                break;
+            }
+            bullet.move();
+
+            for(Enemy enemy : enemies)
+                if(enemy.intersects(bullet)){
+                    enemies.remove(enemy);
+                    iter.remove();
+                    break;
+                }
+        }
     }
 
     public static void main(String[] args) {
