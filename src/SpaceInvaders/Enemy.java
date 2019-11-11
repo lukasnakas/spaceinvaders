@@ -7,7 +7,6 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 
 public class Enemy {
-    private GraphicsContext gc;
     private Image enemyShip = new Image("file:assets/enemy.png");
     private double posX, posY;
     private double  width = enemyShip.getWidth(),
@@ -15,13 +14,12 @@ public class Enemy {
     private double speed = 2;
     private boolean movingLeft = true;
 
-    public Enemy (int posX, int posY, GraphicsContext gc){
+    public Enemy (int posX, int posY){
         this.posX = posX;
         this.posY = posY;
-        this.gc = gc;
     }
 
-    public void render(){
+    public void render(GraphicsContext gc){
         gc.drawImage(enemyShip, posX, posY);
     }
 
@@ -30,7 +28,6 @@ public class Enemy {
             moveLeft();
         else
             moveRight(canvas);
-        render();
     }
 
     public void moveRight(Canvas canvas){

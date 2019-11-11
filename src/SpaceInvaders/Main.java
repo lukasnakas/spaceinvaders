@@ -39,8 +39,8 @@ public class Main extends Application {
         Ship ship = new Ship((int)canvas.getWidth() / 2, 550);
 
         ArrayList<Enemy> enemies = new ArrayList<>();
-        enemies.add(new Enemy(550, 50, gc));
-        enemies.add(new Enemy(300, 50, gc));
+        enemies.add(new Enemy(550, 50));
+        enemies.add(new Enemy(300, 50));
 
         boolean timeToMoveEnemies = true;
 
@@ -59,33 +59,13 @@ public class Main extends Application {
         {
             public void handle(long currentNanoTime)
             {
-                if(commands.size() != 0) {
-
-                    if (commands.contains("D"))
-                        ship.moveRight(canvas);
-
-                    if (commands.contains("A"))
-                        ship.moveLeft();
-
-                    if(commands.contains("SPACE") && readyToShoot) {
-                        readyToShoot = false;
-                        bulletX = ship.getPosX() + (ship.getWidth() / 2);
-                        bulletY = ship.getPosY();
-                        Bullet bullet = new Bullet(bulletX, bulletY, gc);
-                        bullets.add(bullet);
-                    }
-                }
+                render(gc, ship, enemies, bullets);
+                handleCommands(ship, canvas, gc);
 
                 if(bullets.size() == 0)
                     readyToShoot = true;
 
-                // background image clears canvas
-                gc.drawImage( background, 0, 0 );
-                ship.render(gc);
-
-                for(Enemy e : enemies)
-                    e.move(canvas);
-
+                handleEnemies(enemies, canvas);
                 handleBullets(enemies);
                 checkWinCondition(enemies);
             }
@@ -93,6 +73,30 @@ public class Main extends Application {
         }.start();
 
         primaryStage.show();
+    }
+
+    private void handleCommands(Ship ship, Canvas canvas, GraphicsContext gc) {
+        if(commands.size() != 0) {
+
+            if (commands.contains("D"))
+                ship.moveRight(canvas);
+
+            if (commands.contains("A"))
+                ship.moveLeft();
+
+            if(commands.contains("SPACE") && readyToShoot) {
+                readyToShoot = false;
+                bulletX = ship.getPosX() + (ship.getWidth() / 2);
+                bulletY = ship.getPosY();
+                Bullet bullet = new Bullet(bulletX, bulletY);
+                bullets.add(bullet);
+            }
+        }
+    }
+
+    private void handleEnemies(ArrayList<Enemy> enemies, Canvas canvas) {
+        for(Enemy e : enemies)
+            e.move(canvas);
     }
 
     private void checkWinCondition(ArrayList<Enemy> enemies) {
@@ -121,6 +125,17 @@ public class Main extends Application {
                     break;
                 }
         }
+    }
+
+    public void render(GraphicsContext gc, Ship ship, ArrayList<Enemy> enemies, ArrayList<Bullet> bullets){
+        gc.drawImage( background, 0, 0 );
+        ship.render(gc);
+
+        for(Enemy enemy : enemies)
+            enemy.render(gc);
+
+        for(Bullet bullet : bullets)
+            bullet.render(gc);
     }
 
     public static void main(String[] args) {

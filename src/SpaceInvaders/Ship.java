@@ -7,7 +7,6 @@ import javafx.scene.image.Image;
 import javafx.stage.Window;
 
 public class Ship {
-
     private Image ship = new Image("file:assets/ship.png");
     private double posX, posY;
     private double  width = ship.getWidth(),
