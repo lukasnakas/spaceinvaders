@@ -15,7 +15,6 @@ import java.util.Iterator;
 
 
 public class Main extends Application {
-
     Image background = new Image("file:assets/background.png");
 
     ArrayList<Bullet> bullets = new ArrayList<>();
@@ -37,17 +36,19 @@ public class Main extends Application {
         GraphicsContext gc = canvas.getGraphicsContext2D();
 
         Ship ship = new Ship((int)canvas.getWidth() / 2, 550);
-
         Enemy[][] enemies = new Enemy[5][11];
 
-        int posX, posY = 20;
+        int distanceBetweenEnemiesAxisX = 70;
+        int distanceBetweenEnemiesAxisY = 40;
+        int enemyPosX = 15, enemyPosY = 20;
+
         for(int i = 0; i < enemies.length; i++) {
-            posX = 15;
+            enemyPosX = 15;
             for (int j = 0; j < enemies[i].length; j++) {
-                enemies[i][j] = new Enemy(posX, posY);
-                posX += 70;
+                enemies[i][j] = new Enemy(enemyPosX, enemyPosY);
+                enemyPosX += distanceBetweenEnemiesAxisX;
             }
-            posY += 40;
+            enemyPosY += distanceBetweenEnemiesAxisY;
         }
 
 //        enemies.add(new Enemy(550, 50));
@@ -104,9 +105,28 @@ public class Main extends Application {
     }
 
     private void handleEnemies(Enemy[][] enemies, Canvas canvas) {
+        if(hasReachedBorder(enemies, canvas))
+            changeMovingWay(enemies);
+
+        for(int i = 0; i < enemies.length; i++)
+            for(int j = 0; j < enemies[i].length; j++) {
+                if(!enemies[i][j].isDestroyed())
+                enemies[i][j].move(canvas);
+            }
+    }
+
+    private boolean hasReachedBorder(Enemy[][] enemies, Canvas canvas){
         for(int i = 0; i < enemies.length; i++)
             for(int j = 0; j < enemies[i].length; j++)
-                enemies[i][j].move(canvas);
+                if (enemies[i][j].getPosX() == 15 || enemies[i][j].getPosX() + enemies[i][j].getWidth() == 765)
+                    return true;
+        return false;
+    }
+
+    private void changeMovingWay(Enemy[][] enemies){
+        for(int i = 0; i < enemies.length; i++)
+            for(int j = 0; j < enemies[i].length; j++)
+                enemies[i][j].setMovingLeft(!enemies[i][j].isMovingLeft());
     }
 
     private boolean areEnemiesDestroyed(Enemy[][] enemies){

@@ -33,15 +33,14 @@ public class Enemy {
     }
 
     public void moveRight(Canvas canvas){
-
-        if(posX + enemyShip.getWidth() + speed < canvas.getWidth() - 10)
+        if(posX + width + speed < canvas.getWidth() - 10)
             posX += speed;
         else
             movingLeft = true;
     }
 
     public void moveLeft(){
-        if(posX - speed > 10)
+        if(posX - speed > 15)
             posX -= speed;
         else
             movingLeft = false;
@@ -85,5 +84,13 @@ public class Enemy {
 
     public void setDestroyed(boolean destroyed) {
         isDestroyed = destroyed;
+    }
+
+    public boolean isMovingLeft() {
+        return movingLeft;
+    }
+
+    public void setMovingLeft(boolean movingLeft) {
+        this.movingLeft = movingLeft;
     }
 }

@@ -7,8 +7,8 @@ import javafx.scene.image.Image;
 
 public class Bullet {
     private Image bullet = new Image("file:assets/bullet.png");
-    private double width = bullet.getWidth(),
-                height = bullet.getHeight();
+    private double  width = bullet.getWidth(),
+                    height = bullet.getHeight();
     private double posX, posY;
     private double speed = 10;
 

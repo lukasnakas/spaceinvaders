@@ -13,7 +13,7 @@ public class Ship {
                     height = ship.getHeight();
 
     public Ship (double posX, double posY){
-        this.posX = posX;
+        this.posX = posX - width / 2;
         this.posY = posY;
     }
 
