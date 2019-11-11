@@ -1,6 +1,5 @@
 package SpaceInvaders;
 
-import javafx.application.Platform;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
@@ -11,9 +10,11 @@ public class Enemy {
     private double posX, posY;
     private double  width = enemyShip.getWidth(),
                     height = enemyShip.getHeight();
-    private double speed = 2;
+    private double speed = 1;
     private boolean movingLeft = true;
     private boolean isDestroyed = false;
+    private boolean allowedShooting = false;
+    private int borderOffset = 15;
 
     public Enemy (int posX, int posY){
         this.posX = posX;
@@ -33,17 +34,19 @@ public class Enemy {
     }
 
     public void moveRight(Canvas canvas){
-        if(posX + width + speed < canvas.getWidth() - 10)
+        if(posX + width + speed <= canvas.getWidth() - borderOffset)
             posX += speed;
-        else
+        else {
+            System.out.println(posX + width);
             movingLeft = true;
+        }
     }
 
     public void moveLeft(){
-        if(posX - speed > 15)
+        if(posX - speed >= borderOffset)
             posX -= speed;
-        else
-            movingLeft = false;
+//        else
+//            movingLeft = false;
     }
 
     public Rectangle2D getBoundary(){
@@ -92,5 +95,21 @@ public class Enemy {
 
     public void setMovingLeft(boolean movingLeft) {
         this.movingLeft = movingLeft;
+    }
+
+    public int getBorderOffset() {
+        return borderOffset;
+    }
+
+    public boolean isAllowedShooting() {
+        return allowedShooting;
+    }
+
+    public void setAllowedShooting(boolean allowedShooting) {
+        this.allowedShooting = allowedShooting;
+    }
+
+    public void setEnemyShip(Image enemyShip) {
+        this.enemyShip = enemyShip;
     }
 }

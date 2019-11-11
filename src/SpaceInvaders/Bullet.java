@@ -11,6 +11,7 @@ public class Bullet {
                     height = bullet.getHeight();
     private double posX, posY;
     private double speed = 10;
+    private boolean belongingToPlayer = true;
 
     public Bullet(double posX, double posY){
         this.posX = posX;
@@ -22,14 +23,17 @@ public class Bullet {
     }
 
     public boolean isOutOfBounds(){
-        if(posY + bullet.getHeight() < 0)
+        if(posY + bullet.getHeight() < 0 || posY > 600)
             return true;
         else
             return false;
     }
 
     public void move(){
-        posY -= speed;
+        if(belongingToPlayer)
+            posY -= speed;
+        else
+            posY += speed;
     }
 
     public Rectangle2D getBoundary(){
@@ -42,5 +46,33 @@ public class Bullet {
 
     public double getSpeed(){
         return this.speed;
+    }
+
+    public void setBullet(Image bullet) {
+        this.bullet = bullet;
+    }
+
+    public boolean isBelongingToPlayer() {
+        return belongingToPlayer;
+    }
+
+    public void setBelongingToPlayer(boolean belongingToPlayer) {
+        this.belongingToPlayer = belongingToPlayer;
+    }
+
+    public double getPosX() {
+        return posX;
+    }
+
+    public void setPosX(double posX) {
+        this.posX = posX;
+    }
+
+    public double getPosY() {
+        return posY;
+    }
+
+    public void setPosY(double posY) {
+        this.posY = posY;
     }
 }

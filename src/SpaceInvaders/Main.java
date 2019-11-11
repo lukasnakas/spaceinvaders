@@ -1,23 +1,28 @@
 package SpaceInvaders;
 
 import javafx.animation.AnimationTimer;
+import javafx.animation.PauseTransition;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Alert;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Random;
 
 
 public class Main extends Application {
     Image background = new Image("file:assets/background.png");
 
     ArrayList<Bullet> bullets = new ArrayList<>();
+    ArrayList<Bullet> enemyBullets = new ArrayList<>();
     ArrayList<String> commands = new ArrayList<>();
     boolean readyToShoot = true;
     double bulletX, bulletY;
@@ -40,12 +45,14 @@ public class Main extends Application {
 
         int distanceBetweenEnemiesAxisX = 70;
         int distanceBetweenEnemiesAxisY = 40;
-        int enemyPosX = 15, enemyPosY = 20;
+        int enemyPosX = 15, enemyPosY = 10;
 
         for(int i = 0; i < enemies.length; i++) {
             enemyPosX = 15;
             for (int j = 0; j < enemies[i].length; j++) {
                 enemies[i][j] = new Enemy(enemyPosX, enemyPosY);
+                if(i == enemies.length - 1)
+                    enemies[i][j].setAllowedShooting(true);
                 enemyPosX += distanceBetweenEnemiesAxisX;
             }
             enemyPosY += distanceBetweenEnemiesAxisY;
@@ -69,7 +76,7 @@ public class Main extends Application {
         {
             public void handle(long currentNanoTime)
             {
-                render(gc, ship, enemies, bullets);
+                render(gc, ship, enemies, bullets, enemyBullets);
                 handleCommands(ship, canvas, gc);
 
                 if(bullets.size() == 0)
@@ -77,6 +84,7 @@ public class Main extends Application {
 
                 handleEnemies(enemies, canvas);
                 handleBullets(enemies);
+                handleEnemyBullets(ship);
                 checkWinCondition(enemies);
             }
 
@@ -109,24 +117,72 @@ public class Main extends Application {
             changeMovingWay(enemies);
 
         for(int i = 0; i < enemies.length; i++)
-            for(int j = 0; j < enemies[i].length; j++) {
+            for(int j = 0; j < enemies[i].length; j++)
                 if(!enemies[i][j].isDestroyed())
-                enemies[i][j].move(canvas);
+                    enemies[i][j].move(canvas);
+
+        updateAvailableEnemyShooters(enemies);
+        enemyShoot(enemies);
+    }
+
+    private void updateAvailableEnemyShooters(Enemy[][] enemies){
+        for(int i = enemies.length - 1; i >= 0; i--)
+            for(int j = 0; j < enemies[i].length; j++){
+                Enemy enemy = enemies[i][j];
+                if (!enemy.isDestroyed() && !enemy.isAllowedShooting() && !isEnemyShooterInColumn(enemies, j)) {
+                    enemy.setAllowedShooting(true);
+                    break;
+                }
             }
+    }
+
+    private boolean isEnemyShooterInColumn(Enemy[][] enemies, int columnIndex){
+        for(int i = enemies.length - 1; i >= 0; i--)
+            if(enemies[i][columnIndex].isAllowedShooting())
+                return true;
+        return false;
+    }
+
+    private Enemy chooseShootingEnemy(Enemy[][] enemies){
+        ArrayList<Enemy> shootingEnemies = new ArrayList<>();
+        for(int i = 0; i < enemies.length; i++)
+            for(int j = 0; j < enemies[i].length; j++)
+                if(enemies[i][j].isAllowedShooting())
+                    shootingEnemies.add(enemies[i][j]);
+
+        Random rand = new Random();
+        int enemyIndex = rand.nextInt(shootingEnemies.size());
+        return shootingEnemies.get(enemyIndex);
+    }
+
+    private void enemyShoot(Enemy[][] enemies){
+        if(enemyBullets.size() == 0) {
+            Enemy shootingEnemy = chooseShootingEnemy(enemies);
+
+            double bulletPosX = (shootingEnemy.getPosX() + (shootingEnemy.getWidth()) / 2);
+            double bulletPosY = shootingEnemy.getPosY() + shootingEnemy.getHeight();
+            Bullet bullet = new Bullet(bulletPosX, bulletPosY);
+            bullet.setBullet(new Image("file:assets/enemy_bullet.png"));
+            bullet.setBelongingToPlayer(false);
+            bullet.setSpeed(4);
+            enemyBullets.add(bullet);
+        }
     }
 
     private boolean hasReachedBorder(Enemy[][] enemies, Canvas canvas){
         for(int i = 0; i < enemies.length; i++)
             for(int j = 0; j < enemies[i].length; j++)
-                if (enemies[i][j].getPosX() == 15 || enemies[i][j].getPosX() + enemies[i][j].getWidth() == 765)
+                if (enemies[i][j].getPosX() <= enemies[i][j].getBorderOffset() || enemies[i][j].getPosX() + enemies[i][j].getWidth() >= canvas.getWidth() - enemies[i][j].getBorderOffset())
                     return true;
         return false;
     }
 
     private void changeMovingWay(Enemy[][] enemies){
         for(int i = 0; i < enemies.length; i++)
-            for(int j = 0; j < enemies[i].length; j++)
+            for(int j = 0; j < enemies[i].length; j++) {
                 enemies[i][j].setMovingLeft(!enemies[i][j].isMovingLeft());
+                enemies[i][j].setPosY(enemies[i][j].getPosY() + 5);
+            }
     }
 
     private boolean areEnemiesDestroyed(Enemy[][] enemies){
@@ -144,6 +200,25 @@ public class Main extends Application {
         }
     }
 
+    private void handleEnemyBullets(Ship ship) {
+        Iterator<Bullet> iter = enemyBullets.iterator();
+
+        while(iter.hasNext()){
+            Bullet bullet = iter.next();
+
+            if(bullet.isOutOfBounds()) {
+                enemyBullets.remove(bullet);
+                break;
+            }
+            bullet.move();
+
+            if(ship.intersects(bullet)) {
+                iter.remove();
+                gameOver();
+            }
+        }
+    }
+
     private void handleBullets(Enemy[][] enemies) {
         Iterator<Bullet> iter = bullets.iterator();
 
@@ -157,16 +232,20 @@ public class Main extends Application {
             bullet.move();
 
             for(int i = 0; i < enemies.length; i++)
-                for(int j = 0; j < enemies[i].length; j++)
-                    if(enemies[i][j].intersects(bullet) && !enemies[i][j].isDestroyed()){
-                        enemies[i][j].setDestroyed(true);
+                for(int j = 0; j < enemies[i].length; j++) {
+                    Enemy enemy = enemies[i][j];
+                    if (enemy.intersects(bullet) && !enemy.isDestroyed()) {
+                        enemy.setDestroyed(true);
+                        if (enemy.isAllowedShooting())
+                            enemy.setAllowedShooting(false);
                         iter.remove();
                         break;
                     }
+                }
         }
     }
 
-    public void render(GraphicsContext gc, Ship ship, Enemy[][] enemies, ArrayList<Bullet> bullets){
+    public void render(GraphicsContext gc, Ship ship, Enemy[][] enemies, ArrayList<Bullet> bullets, ArrayList<Bullet> enemyBullets){
         gc.drawImage( background, 0, 0 );
         ship.render(gc);
 
@@ -176,6 +255,14 @@ public class Main extends Application {
 
         for(Bullet bullet : bullets)
             bullet.render(gc);
+
+        for(Bullet bullet : enemyBullets)
+            bullet.render(gc);
+    }
+
+    private void gameOver(){
+        System.out.println("Game over. Your ship was destroyed!");
+        Platform.exit();
     }
 
     public static void main(String[] args) {

@@ -1,6 +1,7 @@
 package SpaceInvaders;
 
 import javafx.application.Platform;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
@@ -29,6 +30,14 @@ public class Ship {
     public void moveLeft(){
         if (getPosX() - 2 >= 0)
             posX -= 5;
+    }
+
+    public Rectangle2D getBoundary(){
+        return new Rectangle2D(posX, posY, width, height);
+    }
+
+    public boolean intersects(Bullet bullet){
+        return bullet.getBoundary().intersects(this.getBoundary());
     }
 
     public double getPosY() {
