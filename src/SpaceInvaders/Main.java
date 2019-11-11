@@ -41,6 +41,7 @@ public class Main extends Application {
         GraphicsContext gc = canvas.getGraphicsContext2D();
 
         Ship ship = new Ship((int)canvas.getWidth() / 2, 550);
+        ArrayList<Castle> castles = new ArrayList<>();
         Enemy[][] enemies = new Enemy[5][11];
 
         int distanceBetweenEnemiesAxisX = 70;
@@ -58,8 +59,10 @@ public class Main extends Application {
             enemyPosY += distanceBetweenEnemiesAxisY;
         }
 
-//        enemies.add(new Enemy(550, 50));
-//        enemies.add(new Enemy(300, 50));
+        castles.add(new Castle(100, 450));
+        castles.add(new Castle(300, 450));
+        castles.add(new Castle(500, 450));
+        castles.add(new Castle(700, 450));
 
         scene.setOnKeyPressed(keyEvent -> {
             if(keyEvent.getCode().toString() != "SPACE")
@@ -76,16 +79,17 @@ public class Main extends Application {
         {
             public void handle(long currentNanoTime)
             {
-                render(gc, ship, enemies, bullets, enemyBullets);
+                render(gc, ship, enemies, castles, bullets, enemyBullets);
                 handleCommands(ship, canvas, gc);
 
                 if(bullets.size() == 0)
                     readyToShoot = true;
 
                 handleEnemies(enemies, canvas);
-                handleBullets(enemies);
-                handleEnemyBullets(ship);
+                handleBullets(enemies, castles);
+                handleEnemyBullets(ship, castles);
                 checkWinCondition(enemies);
+                checkLoseCondition(enemies, ship, canvas);
             }
 
         }.start();
@@ -200,7 +204,7 @@ public class Main extends Application {
         }
     }
 
-    private void handleEnemyBullets(Ship ship) {
+    private void handleEnemyBullets(Ship ship, ArrayList<Castle> castles) {
         Iterator<Bullet> iter = enemyBullets.iterator();
 
         while(iter.hasNext()){
@@ -212,6 +216,17 @@ public class Main extends Application {
             }
             bullet.move();
 
+            for(Castle castle : castles)
+                if(castle.intersects(bullet)) {
+                    int currentDamageLevel = castle.getDamageLevel();
+                    if(currentDamageLevel + 1 > 3)
+                        castle.setDestroyed(true);
+                    String imageFile = "castle_dmg" + (currentDamageLevel + 1) + ".png";
+                    castle.setDamageLevel(currentDamageLevel + 1);
+                    castle.setCastle(new Image("file:assets/" + imageFile + "/"));
+                    iter.remove();
+                }
+
             if(ship.intersects(bullet)) {
                 iter.remove();
                 gameOver();
@@ -219,7 +234,16 @@ public class Main extends Application {
         }
     }
 
-    private void handleBullets(Enemy[][] enemies) {
+    private void checkLoseCondition(Enemy[][] enemies, Ship ship, Canvas canvas){
+        for(int i = 0; i < enemies.length; i++)
+            for(int j = 0; j < enemies[i].length; j++) {
+                Enemy enemy = enemies[i][j];
+                if(enemy.intersects(ship) || enemy.getPosY() + enemy.getHeight() >= canvas.getHeight())
+                    gameOver();
+            }
+    }
+
+    private void handleBullets(Enemy[][] enemies, ArrayList<Castle> castles) {
         Iterator<Bullet> iter = bullets.iterator();
 
         while(iter.hasNext()){
@@ -242,16 +266,30 @@ public class Main extends Application {
                         break;
                     }
                 }
+
+            for(Castle castle : castles)
+                if(castle.intersects(bullet)) {
+                    int currentDamageLevel = castle.getDamageLevel();
+                    if(currentDamageLevel + 1 > 3)
+                        castle.setDestroyed(true);
+                    String imageFile = "castle_dmg" + (currentDamageLevel + 1) + ".png";
+                    castle.setDamageLevel(currentDamageLevel + 1);
+                    castle.setCastle(new Image("file:assets/" + imageFile + "/"));
+                    iter.remove();
+                }
         }
     }
 
-    public void render(GraphicsContext gc, Ship ship, Enemy[][] enemies, ArrayList<Bullet> bullets, ArrayList<Bullet> enemyBullets){
+    public void render(GraphicsContext gc, Ship ship, Enemy[][] enemies, ArrayList<Castle> castles, ArrayList<Bullet> bullets, ArrayList<Bullet> enemyBullets){
         gc.drawImage( background, 0, 0 );
         ship.render(gc);
 
         for(int i = 0; i < enemies.length; i++)
             for(int j = 0; j < enemies[i].length; j++)
                 enemies[i][j].render(gc);
+
+        for(Castle castle : castles)
+            castle.render(gc);
 
         for(Bullet bullet : bullets)
             bullet.render(gc);
