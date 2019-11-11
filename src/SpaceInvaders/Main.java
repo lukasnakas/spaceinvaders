@@ -81,10 +81,6 @@ public class Main extends Application {
             {
                 render(gc, ship, enemies, castles, bullets, enemyBullets);
                 handleCommands(ship, canvas, gc);
-
-                if(bullets.size() == 0)
-                    readyToShoot = true;
-
                 handleEnemies(enemies, canvas);
                 handleBullets(enemies, castles);
                 handleEnemyBullets(ship, castles);
@@ -217,7 +213,7 @@ public class Main extends Application {
             bullet.move();
 
             for(Castle castle : castles)
-                if(castle.intersects(bullet)) {
+                if(castle.intersects(bullet) && !castle.isDestroyed()) {
                     int currentDamageLevel = castle.getDamageLevel();
                     if(currentDamageLevel + 1 > 3)
                         castle.setDestroyed(true);
@@ -225,6 +221,7 @@ public class Main extends Application {
                     castle.setDamageLevel(currentDamageLevel + 1);
                     castle.setCastle(new Image("file:assets/" + imageFile + "/"));
                     iter.remove();
+                    break;
                 }
 
             if(ship.intersects(bullet)) {
@@ -244,6 +241,9 @@ public class Main extends Application {
     }
 
     private void handleBullets(Enemy[][] enemies, ArrayList<Castle> castles) {
+        if(bullets.size() == 0)
+            readyToShoot = true;
+
         Iterator<Bullet> iter = bullets.iterator();
 
         while(iter.hasNext()){
@@ -268,7 +268,7 @@ public class Main extends Application {
                 }
 
             for(Castle castle : castles)
-                if(castle.intersects(bullet)) {
+                if(castle.intersects(bullet) && !castle.isDestroyed()) {
                     int currentDamageLevel = castle.getDamageLevel();
                     if(currentDamageLevel + 1 > 3)
                         castle.setDestroyed(true);
@@ -276,6 +276,7 @@ public class Main extends Application {
                     castle.setDamageLevel(currentDamageLevel + 1);
                     castle.setCastle(new Image("file:assets/" + imageFile + "/"));
                     iter.remove();
+                    break;
                 }
         }
     }
@@ -299,7 +300,7 @@ public class Main extends Application {
     }
 
     private void gameOver(){
-        System.out.println("Game over. Your ship was destroyed!");
+        System.out.println("Game over. You lost!");
         Platform.exit();
     }
 
