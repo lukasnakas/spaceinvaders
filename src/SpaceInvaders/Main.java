@@ -203,10 +203,10 @@ public class Main extends Application {
     }
 
     private void handleEnemyBullets(Ship ship, ArrayList<Castle> castles) {
-        Iterator<Bullet> iter = enemyBullets.iterator();
+        Iterator<Bullet> bulletsIterator = enemyBullets.iterator();
 
-        while(iter.hasNext()){
-            Bullet bullet = iter.next();
+        while(bulletsIterator.hasNext()){
+            Bullet bullet = bulletsIterator.next();
 
             if(bullet.isOutOfBounds()) {
                 enemyBullets.remove(bullet);
@@ -222,12 +222,12 @@ public class Main extends Application {
                     String imageFile = "castle_dmg" + (currentDamageLevel + 1) + ".png";
                     castle.setDamageLevel(currentDamageLevel + 1);
                     castle.setCastle(new Image("file:assets/" + imageFile + "/"));
-                    iter.remove();
+                    bulletsIterator.remove();
                     break;
                 }
 
             if(ship.intersects(bullet)) {
-                iter.remove();
+                bulletsIterator.remove();
                 gameOver();
             }
         }
@@ -256,10 +256,10 @@ public class Main extends Application {
         if(bullets.size() == 0)
             readyToShoot = true;
 
-        Iterator<Bullet> iter = bullets.iterator();
+        Iterator<Bullet> bulletsIterator = bullets.iterator();
 
-        while(iter.hasNext()){
-            Bullet bullet = iter.next();
+        while(bulletsIterator.hasNext()){
+            Bullet bullet = bulletsIterator.next();
 
             if(bullet.isOutOfBounds()) {
                 bullets.remove(bullet);
@@ -274,7 +274,7 @@ public class Main extends Application {
                         enemy.setDestroyed(true);
                         if (enemy.isAllowedShooting())
                             enemy.setAllowedShooting(false);
-                        iter.remove();
+                        bulletsIterator.remove();
                         break;
                     }
                 }
@@ -287,7 +287,7 @@ public class Main extends Application {
                     String imageFile = "castle_dmg" + (currentDamageLevel + 1) + ".png";
                     castle.setDamageLevel(currentDamageLevel + 1);
                     castle.setCastle(new Image("file:assets/" + imageFile + "/"));
-                    iter.remove();
+                    bulletsIterator.remove();
                     break;
                 }
         }
