@@ -25,7 +25,7 @@ public class Main extends Application {
     double bulletX, bulletY;
 
     @Override
-    public void start(Stage primaryStage) throws Exception{
+    public void start(Stage primaryStage) {
 
         Group root = new Group();
         Scene scene = new Scene(root);
@@ -37,13 +37,13 @@ public class Main extends Application {
 
         GraphicsContext gc = canvas.getGraphicsContext2D();
 
-        Ship ship = new Ship((int)canvas.getWidth() / 2, 550);
+        Ship ship = new Ship(canvas.getWidth() / 2, 550);
         ArrayList<Castle> castles = new ArrayList<>();
-        Enemy[][] enemies = new Enemy[5][11];
+        Enemy[][] enemies = new Enemy[5][10];
 
         int distanceBetweenEnemiesAxisX = 70;
         int distanceBetweenEnemiesAxisY = 40;
-        int enemyPosX = 15, enemyPosY = 10;
+        int enemyPosX, enemyPosY = 10;
 
         for(int i = 0; i < enemies.length; i++) {
             enemyPosX = 15;
@@ -62,16 +62,13 @@ public class Main extends Application {
         castles.add(new Castle(700, 450));
 
         scene.setOnKeyPressed(keyEvent -> {
-            if(keyEvent.getCode().toString() != "SPACE")
+            if(!keyEvent.getCode().toString().equals("SPACE"))
                 commands.clear();
             if(!commands.contains(keyEvent.getCode().toString()))
                 commands.add(keyEvent.getCode().toString());
         });
 
-        scene.setOnKeyReleased(keyEvent -> {
-            if(commands.contains(keyEvent.getCode().toString()))
-                commands.remove(keyEvent.getCode().toString());
-        });
+        scene.setOnKeyReleased(keyEvent -> commands.remove(keyEvent.getCode().toString()));
 
         new AnimationTimer()
         {
@@ -115,10 +112,10 @@ public class Main extends Application {
         if(hasReachedBorder(enemies, canvas))
             changeDirection(enemies);
 
-        for(int i = 0; i < enemies.length; i++)
-            for(int j = 0; j < enemies[i].length; j++)
-                if(!enemies[i][j].isDestroyed())
-                    enemies[i][j].move(canvas);
+        for (Enemy[] enemyLine : enemies)
+            for (Enemy enemy : enemyLine)
+                if (!enemy.isDestroyed())
+                    enemy.move();
 
         updateAvailableEnemyShooters(enemies);
         enemyShoot(enemies);
@@ -144,10 +141,10 @@ public class Main extends Application {
 
     private Enemy chooseShootingEnemy(Enemy[][] enemies){
         ArrayList<Enemy> shootingEnemies = new ArrayList<>();
-        for(int i = 0; i < enemies.length; i++)
-            for(int j = 0; j < enemies[i].length; j++)
-                if(enemies[i][j].isAllowedShooting())
-                    shootingEnemies.add(enemies[i][j]);
+        for (Enemy[] enemyLine : enemies)
+            for (Enemy enemy : enemyLine)
+                if (enemy.isAllowedShooting())
+                    shootingEnemies.add(enemy);
 
         Random rand = new Random();
         int enemyIndex = rand.nextInt(shootingEnemies.size());
@@ -169,25 +166,26 @@ public class Main extends Application {
     }
 
     private boolean hasReachedBorder(Enemy[][] enemies, Canvas canvas){
-        for(int i = 0; i < enemies.length; i++)
-            for(int j = 0; j < enemies[i].length; j++)
-                if (enemies[i][j].getPosX() <= enemies[i][j].getBorderOffset() || enemies[i][j].getPosX() + enemies[i][j].getWidth() >= canvas.getWidth() - enemies[i][j].getBorderOffset())
+        for (Enemy[] enemyLine : enemies)
+            for (Enemy enemy : enemyLine)
+                if (enemy.getPosX() <= enemy.getBorderOffset() || enemy.getPosX()
+                        + enemy.getWidth() >= canvas.getWidth() - enemy.getBorderOffset())
                     return true;
         return false;
     }
 
     private void changeDirection(Enemy[][] enemies){
-        for(int i = 0; i < enemies.length; i++)
-            for(int j = 0; j < enemies[i].length; j++) {
-                enemies[i][j].setMovingLeft(!enemies[i][j].isMovingLeft());
-                enemies[i][j].setPosY(enemies[i][j].getPosY() + enemies[i][j].getSpeed() * 2);
+        for (Enemy[] enemyLine : enemies)
+            for (Enemy enemy : enemyLine) {
+                enemy.setMovingLeft(!enemy.isMovingLeft());
+                enemy.setPosY(enemy.getPosY() + enemy.getSpeed() * 2);
             }
     }
 
     private boolean areEnemiesDestroyed(Enemy[][] enemies){
-        for(int i = 0; i < enemies.length; i++)
-            for(int j = 0; j < enemies[i].length; j++)
-                if(!enemies[i][j].isDestroyed())
+        for (Enemy[] enemyLine : enemies)
+            for (Enemy enemy : enemyLine)
+                if (!enemy.isDestroyed())
                     return false;
         return true;
     }
@@ -232,19 +230,18 @@ public class Main extends Application {
 
     private void checkEnemyToCastleCollision(Enemy[][] enemies, ArrayList<Castle> castles) {
         for(Castle castle : castles)
-            for(int i = 0; i < enemies.length; i++)
-                for(int j = 0; j < enemies[i].length; j++)
-                    if(enemies[i][j].intersects(castle) && !castle.isDestroyed() && !enemies[i][j].isDestroyed()){
-                        enemies[i][j].setDestroyed(true);
+            for (Enemy[] enemyLine : enemies)
+                for (Enemy enemy : enemyLine)
+                    if (enemy.intersects(castle) && !castle.isDestroyed() && !enemy.isDestroyed()) {
+                        enemy.setDestroyed(true);
                         castle.setDestroyed(true);
                     }
     }
 
     private void checkLoseCondition(Enemy[][] enemies, Ship ship, Canvas canvas){
-        for(int i = 0; i < enemies.length; i++)
-            for(int j = 0; j < enemies[i].length; j++) {
-                Enemy enemy = enemies[i][j];
-                if((enemy.intersects(ship) && !enemy.isDestroyed()) || enemy.getPosY() + enemy.getHeight() >= canvas.getHeight())
+        for (Enemy[] enemyLine : enemies)
+            for (Enemy enemy : enemyLine) {
+                if ((enemy.intersects(ship) && !enemy.isDestroyed()) || enemy.getPosY() + enemy.getHeight() >= canvas.getHeight())
                     gameOver();
             }
     }
@@ -264,9 +261,8 @@ public class Main extends Application {
             }
             bullet.move();
 
-            for(int i = 0; i < enemies.length; i++)
-                for(int j = 0; j < enemies[i].length; j++) {
-                    Enemy enemy = enemies[i][j];
+            for (Enemy[] enemyLine : enemies)
+                for (Enemy enemy : enemyLine) {
                     if (enemy.intersects(bullet) && !enemy.isDestroyed()) {
                         enemy.setDestroyed(true);
                         if (enemy.isAllowedShooting())
@@ -294,9 +290,9 @@ public class Main extends Application {
         gc.drawImage( background, 0, 0 );
         ship.render(gc);
 
-        for(int i = 0; i < enemies.length; i++)
-            for(int j = 0; j < enemies[i].length; j++)
-                enemies[i][j].render(gc);
+        for (Enemy[] enemyLine : enemies)
+            for (Enemy enemy : enemyLine)
+                enemy.render(gc);
 
         for(Castle castle : castles)
             castle.render(gc);

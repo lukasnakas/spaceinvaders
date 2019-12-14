@@ -1,7 +1,6 @@
 package SpaceInvaders;
 
 import javafx.geometry.Rectangle2D;
-import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 
@@ -10,7 +9,7 @@ public class Enemy {
     private double posX, posY;
     private double  width = enemyShip.getWidth(),
                     height = enemyShip.getHeight();
-    private double speed = 2;
+    private double speed = 3;
     private boolean movingLeft = true;
     private boolean isDestroyed = false;
     private boolean allowedShooting = false;
@@ -26,27 +25,19 @@ public class Enemy {
             gc.drawImage(enemyShip, posX, posY);
     }
 
-    public void move(Canvas canvas){
+    public void move(){
         if(movingLeft)
             moveLeft();
         else
-            moveRight(canvas);
+            moveRight();
     }
 
-    public void moveRight(Canvas canvas){
-        if(posX + width + speed <= canvas.getWidth() - borderOffset)
-            posX += speed;
-        else {
-            System.out.println(posX + width);
-            movingLeft = true;
-        }
+    public void moveRight(){
+        posX += speed;
     }
 
     public void moveLeft(){
-        if(posX - speed >= borderOffset)
-            posX -= speed;
-//        else
-//            movingLeft = false;
+        posX -= speed;
     }
 
     public Rectangle2D getBoundary(){
