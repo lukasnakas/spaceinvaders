@@ -1,17 +1,14 @@
 package SpaceInvaders;
 
 import javafx.animation.AnimationTimer;
-import javafx.animation.PauseTransition;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.control.Alert;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
-import javafx.util.Duration;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -116,7 +113,7 @@ public class Main extends Application {
 
     private void handleEnemies(Enemy[][] enemies, Canvas canvas) {
         if(hasReachedBorder(enemies, canvas))
-            changeMovingWay(enemies);
+            changeDirection(enemies);
 
         for(int i = 0; i < enemies.length; i++)
             for(int j = 0; j < enemies[i].length; j++)
@@ -179,7 +176,7 @@ public class Main extends Application {
         return false;
     }
 
-    private void changeMovingWay(Enemy[][] enemies){
+    private void changeDirection(Enemy[][] enemies){
         for(int i = 0; i < enemies.length; i++)
             for(int j = 0; j < enemies[i].length; j++) {
                 enemies[i][j].setMovingLeft(!enemies[i][j].isMovingLeft());
