@@ -39,7 +39,7 @@ public class Main extends Application {
 
         Ship ship = new Ship(canvas.getWidth() / 2, 550);
         ArrayList<Castle> castles = new ArrayList<>();
-        Enemy[][] enemies = new Enemy[5][10];
+        Enemy[][] enemies = new WeakEnemy[5][10];
 
         int distanceBetweenEnemiesAxisX = 70;
         int distanceBetweenEnemiesAxisY = 40;
@@ -48,7 +48,7 @@ public class Main extends Application {
         for(int i = 0; i < enemies.length; i++) {
             enemyPosX = 15;
             for (int j = 0; j < enemies[i].length; j++) {
-                enemies[i][j] = new Enemy(enemyPosX, enemyPosY);
+                enemies[i][j] = new WeakEnemy(enemyPosX, enemyPosY);
                 if(i == enemies.length - 1)
                     enemies[i][j].setAllowedShooting(true);
                 enemyPosX += distanceBetweenEnemiesAxisX;

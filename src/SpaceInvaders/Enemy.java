@@ -4,7 +4,7 @@ import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 
-public class Enemy {
+public abstract class Enemy {
     private Image enemyShip = new Image("file:assets/enemy.png");
     private double posX, posY;
     private double  width = enemyShip.getWidth(),
@@ -52,9 +52,7 @@ public class Enemy {
         return ship.getBoundary().intersects(this.getBoundary());
     }
 
-    public boolean intersects(Castle castle){
-        return castle.getBoundary().intersects(this.getBoundary());
-    }
+    public boolean intersects(Castle castle){ return castle.getBoundary().intersects(this.getBoundary()); }
 
     public double getPosY() {
         return posY;
