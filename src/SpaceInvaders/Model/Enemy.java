@@ -52,6 +52,15 @@ public abstract class Enemy {
         posX -= speed;
     }
 
+    public void takeDamage(){
+        if(currentDamageLevel + 1 > maxDamageLevel)
+            isDestroyed = true;
+        setNextDamagedEnemyImage();
+
+        if (allowedShooting)
+            allowedShooting = false;
+    }
+
     public Rectangle2D getBoundary(){
         return new Rectangle2D(posX, posY, width, height);
     }

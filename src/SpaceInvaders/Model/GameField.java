@@ -174,8 +174,7 @@ public class GameField {
 
             for(Castle castle : castles)
                 if(castle.intersects(bullet) && !castle.isDestroyed()) {
-                    int currentDamageLevel = castle.getCurrentDamageLevel();
-                    if(currentDamageLevel + 1 > castle.getMaxDamageLevel())
+                    if(castle.getCurrentDamageLevel() + 1 > castle.getMaxDamageLevel())
                         castle.setDestroyed(true);
                     castle.setNextDamagedCastleImage();
                     bulletsIterator.remove();
@@ -201,10 +200,9 @@ public class GameField {
 
     private void checkLoseCondition(){
         for (Enemy[] enemyLine : enemies)
-            for (Enemy enemy : enemyLine) {
+            for (Enemy enemy : enemyLine)
                 if ((enemy.intersects(ship) && !enemy.isDestroyed()) || enemy.getPosY() + enemy.getHeight() >= height)
                     gameState.setGameOver(true);
-            }
     }
 
     private void handleBullets() {
@@ -225,13 +223,7 @@ public class GameField {
             for (Enemy[] enemyLine : enemies)
                 for (Enemy enemy : enemyLine) {
                     if (enemy.intersects(bullet) && !enemy.isDestroyed()) {
-                        int currentDamageLevel = enemy.getCurrentDamageLevel();
-                        if(currentDamageLevel + 1 > enemy.getMaxDamageLevel())
-                            enemy.setDestroyed(true);
-                        enemy.setNextDamagedEnemyImage();
-
-                        if (enemy.isAllowedShooting())
-                            enemy.setAllowedShooting(false);
+                        enemy.takeDamage();
                         bulletsIterator.remove();
                         break;
                     }
@@ -239,22 +231,12 @@ public class GameField {
 
             for(Castle castle : castles)
                 if(castle.intersects(bullet) && !castle.isDestroyed()) {
-                    int currentDamageLevel = castle.getCurrentDamageLevel();
-                    if(currentDamageLevel + 1 > 3)
+                    if(castle.getCurrentDamageLevel() + 1 > castle.getMaxDamageLevel())
                         castle.setDestroyed(true);
-                    String imageFile = "castle_dmg" + (currentDamageLevel + 1) + ".png";
-                    castle.setCurrentDamageLevel(currentDamageLevel + 1);
-                    castle.setCastleImage(new Image("file:assets/" + imageFile + "/"));
+                    castle.setNextDamagedCastleImage();
                     bulletsIterator.remove();
                     break;
                 }
-        }
-    }
-
-    private void gameOver(){
-        if(gameState.isGameOver()) {
-            System.out.println("Game over. You lost!");
-            Platform.exit();
         }
     }
 
