@@ -9,7 +9,7 @@ public abstract class Enemy {
     private double posX, posY;
     private double  width = enemyShip.getWidth(),
                     height = enemyShip.getHeight();
-    private double speed = 3;
+    private double speed = 2;
     private boolean movingLeft = true;
     private boolean isDestroyed = false;
     private boolean allowedShooting = false;
