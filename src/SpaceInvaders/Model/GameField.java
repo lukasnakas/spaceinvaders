@@ -1,4 +1,4 @@
-package SpaceInvaders;
+package SpaceInvaders.Model;
 
 import javafx.application.Platform;
 import javafx.scene.canvas.Canvas;
@@ -13,18 +13,21 @@ public class GameField {
     private Enemy[][] enemies;
     private ArrayList<Castle> castles;
     private GameState gameState;
+
+    private Canvas canvas;
     private double width, height;
 
-    ArrayList<Bullet> bullets = new ArrayList<>();
-    ArrayList<Bullet> enemyBullets = new ArrayList<>();
-    boolean readyToShoot = true;
+    private ArrayList<Bullet> bullets = new ArrayList<>();
+    private ArrayList<Bullet> enemyBullets = new ArrayList<>();
+    private boolean readyToShoot = true;
 
-    public GameField(GameState gameState, double width, double height){
+    public GameField(GameState gameState, Canvas canvas){
         this.gameState = gameState;
-        this.width = width;
-        this.height = height;
-        ship = new Ship(width / 2, height / 10 * 9);
-        enemies = new WeakEnemy[5][10];
+        this.canvas = canvas;
+        this.width = canvas.getWidth();
+        this.height = canvas.getHeight();
+        ship = new Ship(width, height);
+        enemies = new Enemy[5][10];
         castles = new ArrayList<>();
         configureEnemies();
         configureCastles();
@@ -38,7 +41,12 @@ public class GameField {
         for(int i = 0; i < enemies.length; i++) {
             enemyPosX = 15;
             for (int j = 0; j < enemies[i].length; j++) {
-                enemies[i][j] = new WeakEnemy(enemyPosX, enemyPosY);
+                if(i < enemies.length / 3)
+                    enemies[i][j] = new StrongEnemy(enemyPosX, enemyPosY);
+                else if(i < enemies.length / 3 * 2)
+                    enemies[i][j] = new MediumEnemy(enemyPosX, enemyPosY);
+                else
+                    enemies[i][j] = new WeakEnemy(enemyPosX, enemyPosY);
                 if(i == enemies.length - 1)
                     enemies[i][j].setAllowedShooting(true);
                 enemyPosX += distanceBetweenEnemiesAxisX;
@@ -54,7 +62,16 @@ public class GameField {
         castles.add(new Castle(700, 450));
     }
 
-    public void handleEnemies(Canvas canvas) {
+    public void update(){
+        handleEnemies();
+        checkEnemyToCastleCollision();
+        handleBullets();
+        handleEnemyBullets();
+        checkWinCondition();
+        checkLoseCondition();
+    }
+
+    private void handleEnemies() {
         if(hasReachedBorder(enemies, canvas))
             changeDirection(enemies);
 
@@ -136,14 +153,14 @@ public class GameField {
         return true;
     }
 
-    public void checkWinCondition() {
+    private void checkWinCondition() {
         if(areEnemiesDestroyed(enemies)) {
             System.out.println("CONGRATULATIONS!!!");
             Platform.exit();
         }
     }
 
-    public void handleEnemyBullets() {
+    private void handleEnemyBullets() {
         Iterator<Bullet> bulletsIterator = enemyBullets.iterator();
 
         while(bulletsIterator.hasNext()){
@@ -157,12 +174,10 @@ public class GameField {
 
             for(Castle castle : castles)
                 if(castle.intersects(bullet) && !castle.isDestroyed()) {
-                    int currentDamageLevel = castle.getDamageLevel();
-                    if(currentDamageLevel + 1 > 3)
+                    int currentDamageLevel = castle.getCurrentDamageLevel();
+                    if(currentDamageLevel + 1 > castle.getMaxDamageLevel())
                         castle.setDestroyed(true);
-                    String imageFile = "castle_dmg" + (currentDamageLevel + 1) + ".png";
-                    castle.setDamageLevel(currentDamageLevel + 1);
-                    castle.setCastle(new Image("file:assets/" + imageFile + "/"));
+                    castle.setNextDamagedCastleImage();
                     bulletsIterator.remove();
                     break;
                 }
@@ -174,7 +189,7 @@ public class GameField {
         }
     }
 
-    public void checkEnemyToCastleCollision() {
+    private void checkEnemyToCastleCollision() {
         for(Castle castle : castles)
             for (Enemy[] enemyLine : enemies)
                 for (Enemy enemy : enemyLine)
@@ -184,7 +199,7 @@ public class GameField {
                     }
     }
 
-    public void checkLoseCondition(){
+    private void checkLoseCondition(){
         for (Enemy[] enemyLine : enemies)
             for (Enemy enemy : enemyLine) {
                 if ((enemy.intersects(ship) && !enemy.isDestroyed()) || enemy.getPosY() + enemy.getHeight() >= height)
@@ -192,7 +207,7 @@ public class GameField {
             }
     }
 
-    public void handleBullets() {
+    private void handleBullets() {
         if(bullets.size() == 0)
             readyToShoot = true;
 
@@ -210,7 +225,11 @@ public class GameField {
             for (Enemy[] enemyLine : enemies)
                 for (Enemy enemy : enemyLine) {
                     if (enemy.intersects(bullet) && !enemy.isDestroyed()) {
-                        enemy.setDestroyed(true);
+                        int currentDamageLevel = enemy.getCurrentDamageLevel();
+                        if(currentDamageLevel + 1 > enemy.getMaxDamageLevel())
+                            enemy.setDestroyed(true);
+                        enemy.setNextDamagedEnemyImage();
+
                         if (enemy.isAllowedShooting())
                             enemy.setAllowedShooting(false);
                         bulletsIterator.remove();
@@ -220,12 +239,12 @@ public class GameField {
 
             for(Castle castle : castles)
                 if(castle.intersects(bullet) && !castle.isDestroyed()) {
-                    int currentDamageLevel = castle.getDamageLevel();
+                    int currentDamageLevel = castle.getCurrentDamageLevel();
                     if(currentDamageLevel + 1 > 3)
                         castle.setDestroyed(true);
                     String imageFile = "castle_dmg" + (currentDamageLevel + 1) + ".png";
-                    castle.setDamageLevel(currentDamageLevel + 1);
-                    castle.setCastle(new Image("file:assets/" + imageFile + "/"));
+                    castle.setCurrentDamageLevel(currentDamageLevel + 1);
+                    castle.setCastleImage(new Image("file:assets/" + imageFile + "/"));
                     bulletsIterator.remove();
                     break;
                 }

@@ -1,11 +1,11 @@
-package SpaceInvaders;
+package SpaceInvaders.Model;
 
 import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 
 public abstract class Enemy {
-    private Image enemyShip = new Image("file:assets/enemy.png");
+    protected Image enemyShip = new Image("file:assets/enemyWeak.png");
     private double posX, posY;
     private double  width = enemyShip.getWidth(),
                     height = enemyShip.getHeight();
@@ -14,11 +14,16 @@ public abstract class Enemy {
     private boolean isDestroyed = false;
     private boolean allowedShooting = false;
     private int borderOffset = 15;
+    protected String difficulty;
+    protected int currentDamageLevel = 0;
+    protected int maxDamageLevel;
 
     public Enemy (int posX, int posY){
         this.posX = posX;
         this.posY = posY;
     }
+
+    public abstract void setNextDamagedEnemyImage();
 
     public void render(GraphicsContext gc){
         if(!isDestroyed)
@@ -116,5 +121,21 @@ public abstract class Enemy {
 
     public void setSpeed(double speed) {
         this.speed = speed;
+    }
+
+    public int getCurrentDamageLevel() {
+        return currentDamageLevel;
+    }
+
+    public void setCurrentDamageLevel(int currentDamageLevel) {
+        this.currentDamageLevel = currentDamageLevel;
+    }
+
+    public int getMaxDamageLevel() {
+        return maxDamageLevel;
+    }
+
+    public void setMaxDamageLevel(int maxDamageLevel) {
+        this.maxDamageLevel = maxDamageLevel;
     }
 }

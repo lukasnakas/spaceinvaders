@@ -1,4 +1,4 @@
-package SpaceInvaders;
+package SpaceInvaders.Model;
 
 import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.GraphicsContext;
@@ -6,11 +6,12 @@ import javafx.scene.image.Image;
 
 public class Castle {
 
-    private Image castle = new Image("file:assets/castle.png");
+    private Image castleImage = new Image("file:assets/castle.png");
     private double posX, posY;
-    private double  width = castle.getWidth(),
-                    height = castle.getHeight();
-    int damageLevel = 0;
+    private double  width = castleImage.getWidth(),
+                    height = castleImage.getHeight();
+    private int currentDamageLevel = 0;
+    private int maxDamageLevel = 3;
     private boolean isDestroyed = false;
 
     public Castle (double posX, double posY){
@@ -20,7 +21,7 @@ public class Castle {
 
     public void render(GraphicsContext gc){
         if(!isDestroyed)
-            gc.drawImage(castle, posX, posY);
+            gc.drawImage(castleImage, posX, posY);
     }
 
     public Rectangle2D getBoundary(){
@@ -29,6 +30,12 @@ public class Castle {
 
     public boolean intersects(Bullet bullet){
         return bullet.getBoundary().intersects(this.getBoundary());
+    }
+
+    public void setNextDamagedCastleImage(){
+        currentDamageLevel++;
+        String imageFile = "castle_dmg" + currentDamageLevel + ".png";
+        castleImage = new Image("file:assets/" + imageFile + "/");
     }
 
     public double getPosX() {
@@ -63,16 +70,24 @@ public class Castle {
         this.height = height;
     }
 
-    public void setCastle(Image castle) {
-        this.castle = castle;
+    public void setCastleImage(Image castleImage) {
+        this.castleImage = castleImage;
     }
 
-    public int getDamageLevel() {
-        return damageLevel;
+    public int getCurrentDamageLevel() {
+        return currentDamageLevel;
     }
 
-    public void setDamageLevel(int damageLevel) {
-        this.damageLevel = damageLevel;
+    public void setCurrentDamageLevel(int currentDamageLevel) {
+        this.currentDamageLevel = currentDamageLevel;
+    }
+
+    public int getMaxDamageLevel() {
+        return maxDamageLevel;
+    }
+
+    public void setMaxDamageLevel(int maxDamageLevel) {
+        this.maxDamageLevel = maxDamageLevel;
     }
 
     public boolean isDestroyed() {

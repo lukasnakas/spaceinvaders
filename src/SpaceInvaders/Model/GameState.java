@@ -1,4 +1,4 @@
-package SpaceInvaders;
+package SpaceInvaders.Model;
 
 public class GameState {
 

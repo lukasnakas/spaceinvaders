@@ -1,5 +1,9 @@
-package SpaceInvaders;
+package SpaceInvaders.Controller;
 
+import SpaceInvaders.Model.Bullet;
+import SpaceInvaders.Model.Castle;
+import SpaceInvaders.Model.Enemy;
+import SpaceInvaders.Model.GameField;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;

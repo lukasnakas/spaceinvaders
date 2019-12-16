@@ -1,6 +1,5 @@
-package SpaceInvaders;
+package SpaceInvaders.Model;
 
-import com.sun.prism.Graphics;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
@@ -23,10 +22,7 @@ public class Bullet {
     }
 
     public boolean isOutOfBounds(){
-        if(posY + bullet.getHeight() < 0 || posY > 600)
-            return true;
-        else
-            return false;
+        return posY + bullet.getHeight() < 0 || posY > 600;
     }
 
     public void move(){
