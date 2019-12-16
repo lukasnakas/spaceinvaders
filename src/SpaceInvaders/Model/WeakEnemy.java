@@ -8,6 +8,12 @@ public class WeakEnemy extends Enemy {
     private String fileFormat = ".png";
     private String filePath = "file:assets/" + fileName + fileFormat;
 
+    public WeakEnemy(int posX, int posY, Image image) {
+        super(posX, posY, image);
+        difficulty = "WEAK";
+        maxDamageLevel = 0;
+    }
+
     public WeakEnemy(int posX, int posY) {
         super(posX, posY);
         enemyShip = new Image(filePath);

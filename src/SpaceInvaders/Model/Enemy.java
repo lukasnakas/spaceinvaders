@@ -5,10 +5,9 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 
 public abstract class Enemy {
-    protected Image enemyShip = new Image("file:assets/enemyWeak.png");
+    protected Image enemyShip;
     private double posX, posY;
-    private double  width = enemyShip.getWidth(),
-                    height = enemyShip.getHeight();
+    private double  width, height;
     private double speed = 2;
     private boolean movingLeft = true;
     private boolean isDestroyed = false;
@@ -17,6 +16,14 @@ public abstract class Enemy {
     protected String difficulty;
     protected int currentDamageLevel = 0;
     protected int maxDamageLevel;
+
+    public Enemy (int posX, int posY, Image image){
+        this.posX = posX;
+        this.posY = posY;
+        enemyShip = image;
+        width = enemyShip.getWidth();
+        height = enemyShip.getHeight();
+    }
 
     public Enemy (int posX, int posY){
         this.posX = posX;

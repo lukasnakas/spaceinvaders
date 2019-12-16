@@ -2,13 +2,9 @@ package SpaceInvaders.Model;
 
 public class GameState {
 
-    private Score score;
-    private Level level;
     private boolean isGameOver = false;
 
-    public GameState(Score score, Level level){
-        this.level = level;
-        this.score = score;
+    public GameState(){
     }
 
     public boolean isGameOver() {
@@ -19,9 +15,4 @@ public class GameState {
         isGameOver = gameOver;
     }
 
-    public void update(){
-        score.add();
-        if(level.getAmountOfEnemiesAlive() <= 0)
-            level.loadNext();
-    }
 }

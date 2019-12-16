@@ -2,6 +2,7 @@ package SpaceInvaders.Controller.Commands;
 
 import SpaceInvaders.Model.Bullet;
 import SpaceInvaders.Model.GameField;
+import javafx.scene.image.Image;
 
 import java.util.ArrayList;
 
@@ -20,7 +21,7 @@ public class ShootCommand implements Command {
             gameField.setReadyToShoot(false);
             double bulletX = gameField.getShip().getPosX() + (gameField.getShip().getWidth() / 2);
             double bulletY = gameField.getShip().getPosY();
-            Bullet bullet = new Bullet(bulletX, bulletY);
+            Bullet bullet = new Bullet(bulletX, bulletY, new Image("file:assets/bullet.png"));
             bullets.add(bullet);
         }
     }

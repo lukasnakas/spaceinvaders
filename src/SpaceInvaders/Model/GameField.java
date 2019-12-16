@@ -26,7 +26,7 @@ public class GameField {
         this.canvas = canvas;
         this.width = canvas.getWidth();
         this.height = canvas.getHeight();
-        ship = new Ship(width, height);
+        ship = new Ship(width, height, new Image("file:assets/ship.png"));
         enemies = new Enemy[5][10];
         castles = new ArrayList<>();
         configureEnemies();
@@ -42,11 +42,11 @@ public class GameField {
             enemyPosX = 15;
             for (int j = 0; j < enemies[i].length; j++) {
                 if(i < enemies.length / 3)
-                    enemies[i][j] = new StrongEnemy(enemyPosX, enemyPosY);
+                    enemies[i][j] = new StrongEnemy(enemyPosX, enemyPosY, new Image("file:assets/enemyStrong.png"));
                 else if(i < enemies.length / 3 * 2)
-                    enemies[i][j] = new MediumEnemy(enemyPosX, enemyPosY);
+                    enemies[i][j] = new MediumEnemy(enemyPosX, enemyPosY, new Image("file:assets/enemyMedium.png"));
                 else
-                    enemies[i][j] = new WeakEnemy(enemyPosX, enemyPosY);
+                    enemies[i][j] = new WeakEnemy(enemyPosX, enemyPosY, new Image("file:assets/enemyWeak.png"));
                 if(i == enemies.length - 1)
                     enemies[i][j].setAllowedShooting(true);
                 enemyPosX += distanceBetweenEnemiesAxisX;
@@ -120,8 +120,8 @@ public class GameField {
 
             double bulletPosX = (shootingEnemy.getPosX() + (shootingEnemy.getWidth()) / 2);
             double bulletPosY = shootingEnemy.getPosY() + shootingEnemy.getHeight();
-            Bullet bullet = new Bullet(bulletPosX, bulletPosY);
-            bullet.setBullet(new Image("file:assets/enemy_bullet.png"));
+            Bullet bullet = new Bullet(bulletPosX, bulletPosY, new Image("file:assets/bullet.png"));
+            bullet.setBulletImage(new Image("file:assets/enemy_bullet.png"));
             bullet.setBelongingToPlayer(false);
             bullet.setSpeed(4);
             enemyBullets.add(bullet);

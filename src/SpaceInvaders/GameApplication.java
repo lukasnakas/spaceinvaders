@@ -4,8 +4,6 @@ import SpaceInvaders.Controller.Commands.Command;
 import SpaceInvaders.Controller.Renderer;
 import SpaceInvaders.Model.GameField;
 import SpaceInvaders.Model.GameState;
-import SpaceInvaders.Model.Level;
-import SpaceInvaders.Model.Score;
 import SpaceInvaders.Service.CommandHandler;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
@@ -40,7 +38,7 @@ public class GameApplication extends Application {
 
         graphicsContext = canvas.getGraphicsContext2D();
 
-        gameState = new GameState(new Score(), new Level());
+        gameState = new GameState();
         gameField = new GameField(gameState, canvas);
 
         renderer = new Renderer(graphicsContext, gameField, canvas);

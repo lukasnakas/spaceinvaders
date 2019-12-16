@@ -6,18 +6,27 @@ import javafx.scene.image.Image;
 
 public class Ship {
 
-    private Image ship = new Image("file:assets/ship.png");
+    private Image ship;
     private double posX, posY;
-    private double  width = ship.getWidth(),
-                    height = ship.getHeight();
+    private double width, height;
     private double speed = 10;
     private double fieldWidth, fieldHeight;
+
+    public Ship (double fieldWidth, double fieldHeight, Image image){
+        this.fieldHeight = fieldHeight;
+        this.fieldWidth = fieldWidth;
+        this.posX = this.fieldWidth / 2 - width / 2;
+        this.posY = this.fieldHeight / 10 * 9;
+        ship = image;
+        width = ship.getWidth();
+        height = ship.getHeight();
+    }
 
     public Ship (double fieldWidth, double fieldHeight){
         this.fieldHeight = fieldHeight;
         this.fieldWidth = fieldWidth;
-        this.posX = this.fieldWidth / 2 - width / 2; // 800 - 64 / 2
-        this.posY = this.fieldHeight / 10 * 9; // 600 / 10 * 9
+        this.posX = this.fieldWidth / 2 - width / 2;
+        this.posY = this.fieldHeight / 10 * 9;
     }
 
     public void render(GraphicsContext gc){
@@ -64,5 +73,13 @@ public class Ship {
 
     public void setPosY(double posY) {
         this.posY = posY;
+    }
+
+    public void setWidth(double width) {
+        this.width = width;
+    }
+
+    public void setHeight(double height) {
+        this.height = height;
     }
 }

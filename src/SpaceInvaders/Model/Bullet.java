@@ -5,12 +5,19 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 
 public class Bullet {
-    private Image bullet = new Image("file:assets/bullet.png");
-    private double  width = bullet.getWidth(),
-                    height = bullet.getHeight();
+    private Image bulletImage;
+    private double width, height;
     private double posX, posY;
     private double speed = 10;
     private boolean belongingToPlayer = true;
+
+    public Bullet(double posX, double posY, Image image){
+        this.posX = posX;
+        this.posY = posY;
+        bulletImage = image;
+        width = bulletImage.getWidth();
+        height = bulletImage.getHeight();
+    }
 
     public Bullet(double posX, double posY){
         this.posX = posX;
@@ -18,11 +25,11 @@ public class Bullet {
     }
 
     public void render(GraphicsContext gc){
-        gc.drawImage(bullet, posX, posY);
+        gc.drawImage(bulletImage, posX, posY);
     }
 
     public boolean isOutOfBounds(){
-        return posY + bullet.getHeight() < 0 || posY > 600;
+        return posY + bulletImage.getHeight() < 0 || posY > 600;
     }
 
     public void move(){
@@ -44,8 +51,8 @@ public class Bullet {
         return this.speed;
     }
 
-    public void setBullet(Image bullet) {
-        this.bullet = bullet;
+    public void setBulletImage(Image bulletImage) {
+        this.bulletImage = bulletImage;
     }
 
     public boolean isBelongingToPlayer() {
@@ -70,5 +77,13 @@ public class Bullet {
 
     public void setPosY(double posY) {
         this.posY = posY;
+    }
+
+    public void setWidth(double width) {
+        this.width = width;
+    }
+
+    public void setHeight(double height) {
+        this.height = height;
     }
 }
