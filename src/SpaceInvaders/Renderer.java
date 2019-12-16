@@ -1,20 +1,24 @@
 package SpaceInvaders;
 
+import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.image.Image;
+import javafx.scene.paint.Color;
 
 public class Renderer {
-    Image background = new Image("file:assets/background.png");
     private GraphicsContext graphicsContext;
     private GameField gameField;
+    private Canvas canvas;
 
-    public Renderer(GraphicsContext graphicsContext, GameField gameField){
+    private Color backgroundColor = Color.BLACK;
+
+    public Renderer(GraphicsContext graphicsContext, GameField gameField, Canvas canvas){
         this.graphicsContext = graphicsContext;
         this.gameField = gameField;
+        this.canvas = canvas;
     }
 
     public void render(){
-        graphicsContext.drawImage(background, 0, 0);
+        drawBackground();
         gameField.getShip().render(graphicsContext);
 
         for (Enemy[] enemyLine : gameField.getEnemies())
@@ -29,6 +33,11 @@ public class Renderer {
 
         for(Bullet bullet : gameField.getEnemyBullets())
             bullet.render(graphicsContext);
+    }
+
+    private void drawBackground() {
+        graphicsContext.setFill(backgroundColor);
+        graphicsContext.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
     }
 
 }

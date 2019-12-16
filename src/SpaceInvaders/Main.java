@@ -28,7 +28,7 @@ public class Main extends Application {
         GraphicsContext gc = canvas.getGraphicsContext2D();
 
         GameField gameField = new GameField(gameState, canvas.getWidth(), canvas.getHeight());
-        Renderer renderer = new Renderer(gc, gameField);
+        Renderer renderer = new Renderer(gc, gameField, canvas);
 
         scene.setOnKeyPressed(keyEvent -> {
             if(!keyEvent.getCode().toString().equals("SPACE"))
