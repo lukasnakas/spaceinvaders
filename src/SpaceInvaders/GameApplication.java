@@ -38,7 +38,7 @@ public class GameApplication extends Application {
 
         graphicsContext = canvas.getGraphicsContext2D();
 
-        gameState = new GameState();
+        gameState = GameState.getInstance();
         gameField = new GameField(gameState, canvas);
 
         renderer = new Renderer(graphicsContext, gameField, canvas);

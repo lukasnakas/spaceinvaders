@@ -2,9 +2,17 @@ package SpaceInvaders.Model;
 
 public class GameState {
 
+    private static GameState gameState = null;
     private boolean isGameOver = false;
 
-    public GameState(){
+    private GameState(){
+
+    }
+
+    public static GameState getInstance(){
+        if(gameState == null)
+            gameState = new GameState();
+        return gameState;
     }
 
     public boolean isGameOver() {
