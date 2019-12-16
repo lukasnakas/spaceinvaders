@@ -4,6 +4,10 @@ import javafx.scene.image.Image;
 
 public class MediumEnemy extends Enemy {
 
+    private String fileName = "enemyMedium";
+    private String fileFormat = ".png";
+    private String filePath = "file:assets/" + fileName + fileFormat;
+
     public MediumEnemy(int posX, int posY) {
         super(posX, posY);
         enemyShip = new Image("file:assets/enemyMedium.png");
@@ -13,8 +17,9 @@ public class MediumEnemy extends Enemy {
 
     public void setNextDamagedEnemyImage(){
         currentDamageLevel++;
-        String imageFile = "enemyMedium_dmg" + currentDamageLevel + ".png";
-        enemyShip = new Image("file:assets/" + imageFile + "/");
+        fileName = "enemyMedium_dmg";
+        filePath = "file:assets/" + fileName + currentDamageLevel + fileFormat;
+        enemyShip = new Image(filePath);
     }
 
 }
