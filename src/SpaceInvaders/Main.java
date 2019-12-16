@@ -37,29 +37,7 @@ public class Main extends Application {
 
         GraphicsContext gc = canvas.getGraphicsContext2D();
 
-        Ship ship = new Ship(canvas.getWidth() / 2, 550);
-        ArrayList<Castle> castles = new ArrayList<>();
-        Enemy[][] enemies = new WeakEnemy[5][10];
-
-        int distanceBetweenEnemiesAxisX = 70;
-        int distanceBetweenEnemiesAxisY = 40;
-        int enemyPosX, enemyPosY = 10;
-
-        for(int i = 0; i < enemies.length; i++) {
-            enemyPosX = 15;
-            for (int j = 0; j < enemies[i].length; j++) {
-                enemies[i][j] = new WeakEnemy(enemyPosX, enemyPosY);
-                if(i == enemies.length - 1)
-                    enemies[i][j].setAllowedShooting(true);
-                enemyPosX += distanceBetweenEnemiesAxisX;
-            }
-            enemyPosY += distanceBetweenEnemiesAxisY;
-        }
-
-        castles.add(new Castle(100, 450));
-        castles.add(new Castle(300, 450));
-        castles.add(new Castle(500, 450));
-        castles.add(new Castle(700, 450));
+        Gamefield gamefield = new Gamefield(800, 600);
 
         scene.setOnKeyPressed(keyEvent -> {
             if(!keyEvent.getCode().toString().equals("SPACE"))
@@ -74,14 +52,14 @@ public class Main extends Application {
         {
             public void handle(long currentNanoTime)
             {
-                render(gc, ship, enemies, castles, bullets, enemyBullets);
-                handleCommands(ship, canvas, gc);
-                handleEnemies(enemies, canvas);
-                checkEnemyToCastleCollision(enemies, castles);
-                handleBullets(enemies, castles);
-                handleEnemyBullets(ship, castles);
-                checkWinCondition(enemies);
-                checkLoseCondition(enemies, ship, canvas);
+                render(gc, gamefield.getShip(), gamefield.getEnemies(), gamefield.getCastles(), bullets, enemyBullets);
+                handleCommands(gamefield.getShip(), canvas, gc);
+                handleEnemies(gamefield.getEnemies(), canvas);
+                checkEnemyToCastleCollision(gamefield.getEnemies(), gamefield.getCastles());
+                handleBullets(gamefield.getEnemies(), gamefield.getCastles());
+                handleEnemyBullets(gamefield.getShip(), gamefield.getCastles());
+                checkWinCondition(gamefield.getEnemies());
+                checkLoseCondition(gamefield.getEnemies(), gamefield.getShip(), canvas);
             }
 
         }.start();
